@@ -1,4 +1,5 @@
 # BOT GRASS AUTO FARMING
+- https://t.me/AirdropFamilyIDN
 # Update Grass Python
 - Lite Version
 - Node Version
@@ -35,6 +36,15 @@ python localgrassnode.py
 ```
 python localgrasslite.py
 ```
+# How to get userid grass
+- login ke web grass , terus inspect / f12 ,  klik console
+- paste
+``` 
+localStorage.getItem('userId')
+```
+- kalau ga bisa paste ketik ```allow pasting``` enter
+- baru paste ```localStorage.getItem('userId')```enter lagi
+
 # Buat Jalanin Pake Direct IP Local Pake Local Provider ISP/GSM
 - buka cmd , ketik ```proxy``` , nanti local proxy akan jalan di port ```8899```
 - silahkan tambahkan local proxy di ```local_proxies.txt``` isi ```http://127.0.0.1:8899```
