@@ -7,6 +7,7 @@ import uuid
 from loguru import logger
 from websockets_proxy import Proxy, proxy_connect
 from fake_useragent import UserAgent
+import websockets
 
 user_agent = UserAgent()
 random_user_agent = user_agent.random
@@ -28,8 +29,7 @@ async def connect_to_wss(proxy_url, user_id):
             server_hostname = "proxy.wynd.network"
             proxy = Proxy.from_url(proxy_url)
             logger.info(f"Connecting to {uri} using proxy {proxy_url}")
-            async with proxy_connect(uri, proxy=proxy, ssl=ssl_context, server_hostname=server_hostname,
-                                     extra_headers=custom_headers) as websocket:
+            async with websockets.connect(uri, ssl=ssl_context, extra_headers=custom_headers) as websocket:
                 async def send_ping():
                     while True:
                         send_message = json.dumps(
@@ -66,6 +66,9 @@ async def connect_to_wss(proxy_url, user_id):
                         pong_response = {"id": message["id"], "origin_action": "PONG"}
                         logger.debug(f"Sending PONG response: {pong_response}")
                         await websocket.send(json.dumps(pong_response))
+        except AttributeError as e:
+            logger.error(f"AttributeError: {e}")
+            logger.error(f"Proxy: {proxy_url}")
         except Exception as e:
             logger.error(f"Error: {e}")
             logger.error(f"Proxy: {proxy_url}")
