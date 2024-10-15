@@ -9,6 +9,7 @@ import shutil
 from loguru import logger
 from websockets_proxy import Proxy, proxy_connect
 from fake_useragent import UserAgent
+import websockets
 
 user_agent = UserAgent()
 random_user_agent = user_agent.random
@@ -21,19 +22,19 @@ async def connect_to_wss(socks5_proxy, user_id):
             await asyncio.sleep(random.randint(1, 10) / 10)
             custom_headers = {
                 "User-Agent": random_user_agent,
-                #"Origin": "chrome-extension://ilehaonighjijnmpnagapkhpcdbhclfg"
                 "Origin": "chrome-extension://ilehaonighjijnmpnagapkhpcdbhclfg"
             }
             ssl_context = ssl.create_default_context()
             ssl_context.check_hostname = False
             ssl_context.verify_mode = ssl.CERT_NONE
-            #urilist = ["wss://proxy.wynd.network:4444/","wss://proxy.wynd.network:4650/"]
-            #uri = random.choice(urilist)
             uri = "wss://proxy.wynd.network:4650"
             server_hostname = "proxy.wynd.network"
             proxy = Proxy.from_url(socks5_proxy)
-            async with proxy_connect(uri, proxy=proxy, ssl=ssl_context, server_hostname=server_hostname,
-                                     extra_headers=custom_headers) as websocket:
+
+            # Menggunakan websockets.connect
+            async with websockets.connect(uri, ssl=ssl_context, extra_headers=custom_headers) as websocket:
+                logger.info("Connected to websocket")
+
                 async def send_ping():
                     while True:
                         send_message = json.dumps(
