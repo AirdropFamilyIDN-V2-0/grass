@@ -27,6 +27,9 @@ pip install loguru
 pip install websockets_proxy
 ```
 ```
+pip install websockets
+```
+```
 pip install fake_useragent
 ```
 ```
