@@ -4,17 +4,19 @@ import ssl
 import json
 import time
 import uuid
+import requests
+import shutil
 from loguru import logger
 from websockets_proxy import Proxy, proxy_connect
 from fake_useragent import UserAgent
-import websockets
 
 user_agent = UserAgent()
 random_user_agent = user_agent.random
 
-async def connect_to_wss(proxy_url, user_id):
-    device_id = str(uuid.uuid3(uuid.NAMESPACE_DNS, proxy_url))
-    logger.info(f"Device ID: {device_id}")
+
+async def connect_to_wss(socks5_proxy, user_id):
+    device_id = str(uuid.uuid3(uuid.NAMESPACE_DNS, socks5_proxy))
+    logger.info(device_id)
     while True:
         try:
             await asyncio.sleep(random.randint(1, 10) / 10)
@@ -25,18 +27,18 @@ async def connect_to_wss(proxy_url, user_id):
             ssl_context = ssl.create_default_context()
             ssl_context.check_hostname = False
             ssl_context.verify_mode = ssl.CERT_NONE
-            uri = "wss://proxy.wynd.network:4650"
+            uri = "wss://proxy.wynd.network:4650/"
             server_hostname = "proxy.wynd.network"
-            proxy = Proxy.from_url(proxy_url)
-            logger.info(f"Connecting to {uri} using proxy {proxy_url}")
-            async with websockets.connect(uri, ssl=ssl_context, extra_headers=custom_headers) as websocket:
+            proxy = Proxy.from_url(socks5_proxy)
+            async with proxy_connect(uri, proxy=proxy, ssl=ssl_context, server_hostname=server_hostname,
+                                     extra_headers=custom_headers) as websocket:
                 async def send_ping():
                     while True:
                         send_message = json.dumps(
                             {"id": str(uuid.uuid4()), "version": "1.0.0", "action": "PING", "data": {}})
-                        logger.debug(f"Sending PING: {send_message}")
+                        logger.debug(send_message)
                         await websocket.send(send_message)
-                        await asyncio.sleep(5)
+                        await asyncio.sleep(20)
 
                 await asyncio.sleep(1)
                 asyncio.create_task(send_ping())
@@ -44,7 +46,7 @@ async def connect_to_wss(proxy_url, user_id):
                 while True:
                     response = await websocket.recv()
                     message = json.loads(response)
-                    logger.info(f"Received message: {message}")
+                    logger.info(message)
                     if message.get("action") == "AUTH":
                         auth_response = {
                             "id": message["id"],
@@ -59,41 +61,38 @@ async def connect_to_wss(proxy_url, user_id):
                                 "extension_id": "lkbnfiajjmbhnfledhphioinpickokdi"
                             }
                         }
-                        logger.debug(f"Sending AUTH response: {auth_response}")
+                        logger.debug(auth_response)
                         await websocket.send(json.dumps(auth_response))
 
                     elif message.get("action") == "PONG":
                         pong_response = {"id": message["id"], "origin_action": "PONG"}
-                        logger.debug(f"Sending PONG response: {pong_response}")
+                        logger.debug(pong_response)
                         await websocket.send(json.dumps(pong_response))
-        except AttributeError as e:
-            logger.error(f"AttributeError: {e}")
-            logger.error(f"Proxy: {proxy_url}")
         except Exception as e:
-            logger.error(f"Error: {e}")
-            logger.error(f"Proxy: {proxy_url}")
+            logger.error(e)
+            logger.error(socks5_proxy)
+
 
 async def main():
-    with open('data.txt', 'r') as file:
-        lines = file.read().splitlines()
+    # Membaca user_id dari file user_id.txt
+    with open('user_id.txt', 'r') as user_file:
+        user_ids = user_file.read().splitlines()
     
-    user_proxies = {}
-    current_user_id = None
-    for line in lines:
-        if not line.startswith(('http', 'socks4', 'socks5')):
-            current_user_id = line
-            user_proxies[current_user_id] = []
-        else:
-            user_proxies[current_user_id].append(line)
-
-    logger.info(f"User proxies: {user_proxies}")
-
+    # Menampilkan jumlah akun
+    print(f"Jumlah akun: {len(user_ids)}")
+    
+    with open('local_proxies.txt', 'r') as proxy_file:
+        local_proxies = proxy_file.read().splitlines()
+    
+    # Membuat tugas untuk setiap user_id dengan proxy secara bergantian
     tasks = []
-    for user_id, proxies in user_proxies.items():
-        for proxy in proxies:
-            logger.info(f"Scheduling task for user {user_id} with proxy {proxy}")
-            tasks.append(asyncio.ensure_future(connect_to_wss(proxy, user_id)))
+    proxy_count = len(local_proxies)
+    for index, user_id in enumerate(user_ids):
+        proxy = local_proxies[index % proxy_count]  # Memilih proxy secara bergantian
+        tasks.append(asyncio.ensure_future(connect_to_wss(proxy, user_id)))
+    
     await asyncio.gather(*tasks)
 
 if __name__ == '__main__':
+    #letsgo
     asyncio.run(main())
