@@ -84,8 +84,12 @@ async def main():
     
     tasks = []
     proxy_count = len(local_proxies)
-    for index, user_id in enumerate(user_ids):
-        proxy = local_proxies[index % proxy_count]
+    user_count = len(user_ids)
+    
+    # Ensure each proxy is used at least once
+    for i in range(max(proxy_count, user_count)):
+        user_id = user_ids[i % user_count]
+        proxy = local_proxies[i % proxy_count]
         tasks.append(asyncio.ensure_future(connect_to_wss(proxy, user_id)))
     
     await asyncio.gather(*tasks)
