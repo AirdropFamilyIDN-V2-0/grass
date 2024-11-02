@@ -30,7 +30,7 @@ pip install websockets==12.0
 pip install fake_useragent
 ```
 ```
-pip install websocket_proxy
+pip install websockets_proxy
 ```
 ```
 python localgrassnode.py
