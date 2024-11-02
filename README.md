@@ -30,7 +30,7 @@ pip install websockets==12.0
 pip install fake_useragent
 ```
 ```
-pip install proxy.py
+pip install websocket_proxy
 ```
 ```
 python localgrassnode.py
@@ -46,9 +46,3 @@ localStorage.getItem('userId')
 ```
 - kalau ga bisa paste ketik ```allow pasting``` enter
 - baru paste ```localStorage.getItem('userId')```enter lagi
-
-# Buat Jalanin Pake Direct IP Local Pake Local Provider ISP/GSM
-- buka cmd , ketik ```proxy``` , nanti local proxy akan jalan di port ```8899```
-- silahkan tambahkan local proxy di ```local_proxies.txt``` isi ```http://127.0.0.1:8899```
-- contoh gambar dibawah
-- ![image](https://github.com/AirdropFamilyIDN-V2-0/grass/assets/173550656/c418bd2d-27a2-4f90-a443-a9a3f79562af)
