@@ -1,0 +1,7 @@
+requests==2.32.3
+asyncio==3.4.3
+loguru==0.7.2
+websockets_proxy==0.1.2
+fake_useragent==1.5.1
+websockets==12.0
+colorama==0.4.6
