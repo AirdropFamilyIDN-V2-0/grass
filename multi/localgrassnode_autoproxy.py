@@ -105,6 +105,7 @@ async def connect_to_wss(socks5_proxy, user_id):
         except Exception as e:
            # logger.error(f"{Fore.RED}Terjadi error: {str(e)}")
             remove_proxy_from_file(socks5_proxy, user_id)
+            continue
 
 # Remove proxy from file if it's used or invalid
 def remove_proxy_from_file(proxy_to_remove, user_id):
