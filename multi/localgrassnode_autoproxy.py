@@ -41,7 +41,7 @@ except ValueError:
 
 # Set up logging format
 logger.remove()
-logger.add(sys.stderr, format="{time:YYYY-MM-DD}{time:HH:mm:ss} | ngarit | {message}")
+logger.add(sys.stderr, format="{time:YYYY-MM-DD} {time:HH:mm:ss} | ngarit | {message}")
 
 # Function to handle WebSocket connection and proxy management
 async def connect_to_wss(socks5_proxy, user_id):
@@ -60,9 +60,9 @@ async def connect_to_wss(socks5_proxy, user_id):
             ssl_context = ssl.create_default_context()
             ssl_context.check_hostname = False
             ssl_context.verify_mode = ssl.CERT_NONE
-            urilist = ["wss://proxy2.wynd.network:4444/", "wss://proxy2.wynd.network:4650/"]
+            urilist = ["wss://proxy.wynd.network:4444/", "wss://proxy.wynd.network:4650/"]
             uri = random.choice(urilist)
-            server_hostname = "proxy2.wynd.network"
+            server_hostname = "proxy.wynd.network"
             proxy = Proxy.from_url(socks5_proxy)
             async with proxy_connect(uri, proxy=proxy, ssl=ssl_context, server_hostname=server_hostname,
                                      extra_headers=custom_headers) as websocket:
