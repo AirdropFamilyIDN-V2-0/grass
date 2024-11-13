@@ -18,19 +18,7 @@ git clone https://github.com/AirdropFamilyIDN-V2-0/grass.git
 cd grass
 ```
 ```
-pip install requests
-```
-```
-pip install loguru
-```
-```
-pip install websockets==12.0
-```
-```
-pip install fake_useragent
-```
-```
-pip install websockets_proxy
+pip install -r requirements.txt
 ```
 ```
 python localgrassnode.py
