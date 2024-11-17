@@ -5,3 +5,4 @@ websockets_proxy==0.1.2
 fake_useragent==1.5.1
 websockets==12.0
 colorama==0.4.6
+PySocks==1.7.1
