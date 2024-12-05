@@ -114,6 +114,7 @@ async def main():
                 f.write(chunk)
         with open('auto_proxies.txt', 'r') as file:
             auto_proxy_list = file.read().splitlines()
+            auto_proxy_list = auto_proxy_list[:50]  # Batasi hanya 50 proxy
 
     # Buat tugas untuk setiap kombinasi user_id dan proxy
     tasks = []
